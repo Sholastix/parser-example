@@ -5,6 +5,7 @@ const puppeteer = require('puppeteer');
 
 const createDatabase = require('./config/createDatabase');
 const database = require('./config/initializeDatabase');
+
 const Overs = require('./models/Overs');
 
 const app = express();
@@ -33,7 +34,6 @@ const url = 'https://www.overclockers.ua/';
                 const link = item.querySelector('.review > .review_image > a').href;
                 const image = item.querySelector('.review > .review_image > a > img').src;
 
-                // Will be needed in case of writing data in file.
                 arr.push({
                     title,
                     link,
@@ -47,12 +47,11 @@ const url = 'https://www.overclockers.ua/';
             //     const link = await item.querySelector('.review > .review_image > a').href;
             //     const image = await item.querySelector('.review > .review_image > a > img').src;
 
-            // // // Will be needed in case of writing data in file.
-            // // arr.push({
-            // //     title,
-            // //     link,
-            // //     image,
-            // // });
+            //     arr.push({
+            //         title,
+            //         link,
+            //         image,
+            //     });
             // };
 
             return arr;
@@ -67,20 +66,20 @@ const url = 'https://www.overclockers.ua/';
                 const articleText = document.querySelector('div.article > p').innerText;
                 return articleText;
             });
-            
+
             html[i]['text'] = article;
         };
-        
+
         // console.log(html, html.length);
-        
+
         await browser.close();
-        
+
         for (const item of html) {
             const title = await item.title;
             const link = await item.link;
             const image = await item.image;
             const text = await item.text;
-            
+
             await Overs.create({
                 title: title,
                 link: link,
@@ -88,7 +87,7 @@ const url = 'https://www.overclockers.ua/';
                 text: text,
             });
         };
-        
+
         // // Writing all parsed data in file.
         // fs.writeFile('oversParser.json', JSON.stringify(html), (err) => {
         //     if (err) throw err;
