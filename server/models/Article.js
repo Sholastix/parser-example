@@ -2,7 +2,7 @@ const { Sequelize } = require('sequelize');
 
 const database = require('../config/initializeDatabase');
 
-const Overs = database.define('overs', {
+const Article = database.define('article', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -27,4 +27,4 @@ const Overs = database.define('overs', {
     },
 });
 
-module.exports = Overs;
+module.exports = Article;

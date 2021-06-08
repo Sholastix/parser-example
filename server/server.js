@@ -1,15 +1,22 @@
 require('dotenv').config()
+const cors = require('cors');
 const express = require('express');
 // const fs = require('fs');
 const puppeteer = require('puppeteer');
 
 const createDatabase = require('./config/createDatabase');
 const database = require('./config/initializeDatabase');
+const articleRoute = require('./routes/articleRoute');
 
-const Overs = require('./models/Overs');
+const Article = require('./models/Article');
 
 const app = express();
 app.use(express.json());
+
+// Сross-origin resource sharing permission.
+app.use(cors());
+
+app.use('/api', articleRoute);
 
 // Parsing the site.
 const url = 'https://www.overclockers.ua/';
@@ -24,8 +31,10 @@ const url = 'https://www.overclockers.ua/';
         // await page.screenshot({ path: 'example.png', fullPage: true });
 
         const html = await page.evaluate(async () => {
+            // Creating array as temporary storage for parsed data.
             const arr = [];
 
+            // Creating container which contains all recent articles from site 'overclockers.ua'.
             const container = document.querySelectorAll('div.review');
 
             // VARIANT 1.
@@ -57,11 +66,13 @@ const url = 'https://www.overclockers.ua/';
             return arr;
         });
 
+        // Clicking on all articles links in 'html' array.
         for (let i = 0; i < html.length; i++) {
             await page.goto(html[i].link, { waitUntil: 'domcontentloaded' });
             await page.waitForSelector('div.article > p');
             console.log(i);
 
+            // Retrieving text content from articles.
             const article = await page.evaluate(async () => {
                 const articleText = document.querySelector('div.article > p').innerText;
                 return articleText;
@@ -74,13 +85,15 @@ const url = 'https://www.overclockers.ua/';
 
         await browser.close();
 
+        // Retrieving all parsed data from 'html' array.
         for (const item of html) {
             const title = await item.title;
             const link = await item.link;
             const image = await item.image;
             const text = await item.text;
 
-            await Overs.create({
+            // Writing that data in MySQL database.
+            await Article.create({
                 title: title,
                 link: link,
                 image: image,
@@ -89,9 +102,9 @@ const url = 'https://www.overclockers.ua/';
         };
 
         // // Writing all parsed data in file.
-        // fs.writeFile('oversParser.json', JSON.stringify(html), (err) => {
+        // fs.writeFile('overclockers.json', JSON.stringify(html), (err) => {
         //     if (err) throw err;
-        //     console.log('oversParser.json writed successfully!');
+        //     console.log('overclockers.json writed successfully!');
         // });
     } catch (err) {
         await browser.close();

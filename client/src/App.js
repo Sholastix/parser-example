@@ -7,6 +7,20 @@ import './App.css';
 
 const App = () => {
 
+    /////////////////////////////////// STATE SETTINGS ////////////////////////////////
+
+    const [articles, setArticles] = useState([]);
+
+    useEffect(() => {
+
+    });
+
+    /////////////////////////////////// HTTP REQUESTS ////////////////////////////////
+
+    // GET
+    
+
+
     return (
         <div className='App container'>
 
