@@ -21,33 +21,20 @@ module.exports = async () => {
             const arr = [];
 
             // Creating container which contains all recent articles from site 'overclockers.ua'.
-            const container = document.querySelectorAll('div.review');
+            const mainContainer = document.querySelector('div.mainpage_block_right');
+            const container = mainContainer.querySelectorAll('div.review');
 
-            // VARIANT 1.
-            container.forEach((item) => {
-                const title = item.querySelector('.review > ul > li > a').innerText;
-                const link = item.querySelector('.review > .review_image > a').href;
-                const image = item.querySelector('.review > .review_image > a > img').src;
+            for (const item of container) {
+                const title = await item.querySelector('.review > ul > li > a').innerText;
+                const link = await item.querySelector('.review > .review_image > a').href;
+                const image = await item.querySelector('.review > .review_image > a > img').src;
 
                 arr.push({
                     title,
                     link,
                     image,
                 });
-            });
-
-            // // VARIANT 2.
-            // for (const item of container) {
-            //     const title = await item.querySelector('.review > ul > li > a').innerText;
-            //     const link = await item.querySelector('.review > .review_image > a').href;
-            //     const image = await item.querySelector('.review > .review_image > a > img').src;
-
-            //     arr.push({
-            //         title,
-            //         link,
-            //         image,
-            //     });
-            // };
+            };
 
             return arr;
         });
